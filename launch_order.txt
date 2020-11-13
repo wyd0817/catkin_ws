@@ -1,0 +1,6 @@
+
+roslaunch joy_handler_hori joy_handler_hori.launch
+
+rosrun snake_control snake_control_node
+
+roslaunch vrep_control vrep_control.launch
