@@ -240,10 +240,13 @@ void SnakeControlRequest::RequestJointSetPositionRange(std::vector<double> joint
     joint_taeget_position.joint_index = i_joint;
     joint_taeget_position.value = joint_angle[i_joint]*180.0/M_PI;
     pub_joint_target_position_.publish(joint_taeget_position);
-
     joint_command.set_position = true;
     joint_command.joint_index = i_joint;
     joint_command.target_position = joint_angle[i_joint]*180.0/M_PI;
+		// if(i_joint%2)
+		// ROS_INFO("* QQQ[%d] = [%4.3f] *",i_joint,joint_command.target_position);
+		// else
+		// ROS_INFO("*                                QQQ[%d] = [%4.3f] *",i_joint,joint_command.target_position);
     pub_joint_command_.publish(joint_command);
 
     joint_command4V2.set_position=true;

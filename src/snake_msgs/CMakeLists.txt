@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
    snake_joint_data4V2.msg
 
   SnakeJointError.msg
- 
+
   SnakeSlaveMCUData.msg
   SnakeSlaveMCUError.msg
 
@@ -25,6 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 
   SnakeCOPCommand.msg
   SnakeCOPData.msg
+  gps.msg
 
 
  )
@@ -42,9 +43,6 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-#add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-
-

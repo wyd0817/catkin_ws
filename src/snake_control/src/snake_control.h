@@ -23,7 +23,7 @@
 #include "pedal_wave_motion.h"
 #include "sidewinding.h"
 #include "s_shaped_longitudnal_wave.h"
-
+#include "warp_gait.h"
 //#include "sidewinding_gait.h"
 //#include "lateral_rolling_gait.h"
 
@@ -48,6 +48,7 @@ class SnakeControl {   //: public SnakebotControlRequest{
 
   static void Initialize() {
     SnakeControlRequest::Initialize();
+    SShapedLongitudnalWave::Initialize();
   }
 
   static double loop_rate(){ return loop_rate_; }
@@ -63,6 +64,7 @@ class SnakeControl {   //: public SnakebotControlRequest{
   static void OperateMovePedalWaveMotion(joy_handler_hori::JoySelectedData joy_data);
   static void OperateMoveSinusLifting(joy_handler_hori::JoySelectedData joy_data);
   static void OperateMoveSideWinding(joy_handler_hori::JoySelectedData joy_data);
+  static void OperateMoveWarpGait(joy_handler_hori::JoySelectedData joy_data);
 
   static void OperateMoveTest(joy_handler_hori::JoySelectedData joy_data);
 
@@ -76,6 +78,7 @@ class SnakeControl {   //: public SnakebotControlRequest{
   static SinusLifting    sinus_lifting_;
   static SideWinding     sidewinding_;
   static SShapedLongitudnalWave s_shaped_longitudnal_wave_;
+  static WarpGait warp_gait_;
 
 };
 

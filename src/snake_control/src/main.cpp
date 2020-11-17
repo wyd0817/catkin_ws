@@ -45,7 +45,7 @@ void callback(joy_handler_hori::JoySelectedData joy_selected_data)
 	}
 }
 
-// 通常
+// 通常   20ミリ秒に1回でtimerCallback関数を呼び出す
 void timerCallback(const ros::TimerEvent& event)
 {
 	static int mode = 0;
@@ -57,8 +57,9 @@ void timerCallback(const ros::TimerEvent& event)
 
     /* S Shaped Longitudnal Wave */
 	if (joystick.button_select and joystick.button_r1) {
+	// if (1) {
 		mode=1;    // s字縦波モーション
-		ROS_INFO("***   Winding Gait  -->  ***");
+		ROS_INFO("***    S Shaped Longitudnal Wave   -->  ***");
 	}
     if(mode==1){
 
@@ -92,6 +93,24 @@ void timerCallback(const ros::TimerEvent& event)
     	SnakeControl::OperateMoveSideWinding(joystick);
     }
 
+	/* warp gait */
+	if (joystick.button_select and joystick.button_square) {
+			mode=5;    //warp gait
+			ROS_INFO("***  Warp Gait -->  ***");
+	}
+
+	if(mode==5){
+		SnakeControl::OperateMoveWarpGait(joystick);
+	}
+
+    /* Helical Wave Propagation Motion */
+	if (joystick.button_select and joystick.button_circle) {
+		mode=7;    //helical wave propagate motion
+		ROS_INFO("***  Helical Wave Propagation Motion -->  ***");
+	}
+    if(mode==7){
+    	SnakeControl::OperateMoveHelicalWavePropagateMotion(joystick);
+    }
 
 	/* Inchworm Gait */
 	if (joystick.button_select and joystick.button_triangle) {
@@ -101,15 +120,6 @@ void timerCallback(const ros::TimerEvent& event)
     if(mode==8){	//Inchworm Gait
     	//SnakeControl::OperateMoveWindingShift(joystick);
     	SnakeControl::OperateMoveInchwormGait(joystick);
-    }
-
-    /* Helical Wave Propagation Motion */
-	if (joystick.button_select and joystick.button_circle) {
-		mode=7;    //helical wave propagate motion
-		ROS_INFO("***  Helical Wave Propagation Motion -->  ***");
-	}
-    if(mode==7){
-    	SnakeControl::OperateMoveHelicalWavePropagateMotion(joystick);
     }
 
 
@@ -160,14 +170,19 @@ void timerCallback(const ros::TimerEvent& event)
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "snake_control");
+	ros::init(argc, argv, "snake_control");//初始化节点名称
 	ROS_INFO("snake_control node initialized !");
 
-	ros::NodeHandle nh;
-	nh.param("loop_rate", SnakeControl::loop_rate_, 50.0);
+	ros::NodeHandle nh;//声明一个节点句柄来与ROS系统进行通信
+	// nh.param("loop_rate", SnakeControl::loop_rate_, 50.0);//50Hz = 0.02 秒
+	nh.param("loop_rate", SnakeControl::loop_rate_, 100.0);//50Hz = 0.02 秒
+
 
 	SnakeControl::Initialize();
 
+	// 声明订阅者,创建一个订阅者 joy_selected_data ,
+	// 它利用 joy_handler_hori 功能包的的 JoySelectedData 消息文件。
+	// 话题名称是 "joy_selected_data" ,订阅者队列( queue )的大小设为 1 。
 	ros::Subscriber sub_joy_selected_data =
 			nh.subscribe("joy_selected_data", 1, &SnakeControl::CallBackOfJoySelectedData);
 
@@ -175,6 +190,10 @@ int main(int argc, char **argv)
 	SnakeControl::sampling_time_ = 1.0/SnakeControl::loop_rate_;  // サンプリング時間を設定
 
 	// タイマーを作る Durationの単位は[sec]
+	//指定された間隔で呼び出すコールバック関数です．
+	//createTimer関数の第一引数であるDurationは，呼び出す間隔を表します．
+	//ros::Duration(0.02)とした場合には，0.02分の1秒(20ミリ秒に1回)の間隔でtimerCallback関数を呼び出します．
 	ros::Timer timer = nh_timer.createTimer(ros::Duration(SnakeControl::sampling_time_), timerCallback);
+	// 用于调用后台函数,等待接收消息。在接收到消息时执行后台函数。
 	ros::spin();
 }

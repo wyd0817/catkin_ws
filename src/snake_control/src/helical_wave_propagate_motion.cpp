@@ -96,16 +96,23 @@ void HelicalWavePropagateMotion::init()
 	psi_hyper_ = 0;
 }
 
+int h_num0 = 0,h_num1 = 0;
 /* Helical Wave Propagate Motion By Shift */
 void HelicalWavePropagateMotion::HelicalWavePropagateMotionByShift(RobotSpec spec)
 {
 	while(s_ > pre_s_ + step_s_){  //
+		ROS_DEBUG(">>> % d >>>",h_num1 );
+		ROS_DEBUG("pre_s_ = %4f,step_s_ = %4f,s_0_ = %4f", pre_s_,step_s_,s_);
 
 		while(pre_s_+step_s_ > S_T){
-
+		ROS_DEBUG("Enter the % d Runge-Kutta method to calculate the function cycle",h_num0 );
+    ROS_DEBUG("pre_s_ = %4f,step_s_ = %4f,S_T = %4f,t = %4f", pre_s_,step_s_,S_T,t_);
 			t_ = t_ + 0.1;
 			S_T = RungeKutta(S_T, t_, t_+0.1, 100);	// ルンゲクッタ法(初期条件x0, 区間[t_, t_+0.1], 分割数100-> 0.1/100 ->0.001
-		}
+			ROS_DEBUG("pre_s_ = %4f,step_s_ = %4f,S_T = %4f,t = %4f", pre_s_,step_s_,S_T,t_);
+			ROS_DEBUG("Exit  the % d Runge-Kutta method to calculate the function cycle\n",h_num0 );
+			h_num0++;
+	}
 
 		//Cross buttonを一回押すと flag ON に
 		if(flag_){
@@ -155,8 +162,11 @@ void HelicalWavePropagateMotion::HelicalWavePropagateMotionByShift(RobotSpec spe
 		}
 		CalculateTargetAngle(spec);
 		pre_s_ = pre_s_ + step_s_;
+		ROS_DEBUG("pre_s_ = %4f,step_s_ = %4f,s_ = %4f", pre_s_,step_s_,s_);
+		ROS_DEBUG("<<< % d <<<\n",h_num1 );
+		h_num1++;
 	}
-	print_parameters();
+	if(h_num1 == 1) print_parameters();
 }
 
 void HelicalWavePropagateMotion::CalculateCurvatureTorsionWithHelicalCurveSimple()

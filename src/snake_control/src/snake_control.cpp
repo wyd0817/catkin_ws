@@ -13,7 +13,7 @@
 const float MIN_JOYSTICK_ON = 0.1;  // ジョイスティックの値がこれより大きければ反応する
 
 RobotSpec spec(
-    /* num_joint             = */ 30,
+    /* num_joint             = */ 24,//24,
     /* link_length_head [m]  = */ 0.20,
     /* link_length_body [m]  = */ 0.061,
     /* link_length_tail [m]  = */ 0.20,
@@ -62,6 +62,11 @@ SideWinding SnakeControl::sidewinding_(
 	    spec.link_length_body()// 0.0905);
 );
 
+WarpGait SnakeControl::warp_gait_(
+    /* spec             = */ spec,
+  	spec.link_length_body()// 0.0905);
+);
+
 
 //=== static メンバ変数の定義 ===============//
 SnakeControl::GaitMode SnakeControl::gait_mode_       = SnakeControl::GAIT_MODE_TEST;
@@ -89,25 +94,26 @@ void SnakeControl::OperateMoveShapedLongitudnalWave(joy_handler_hori::JoySelecte
 {
 	std::vector<double> target_joint_angle(spec.num_joint(), 0.0);  // 値0.0で初期化;
 
-	const double ALPHA_CHANGING_SPEED = 0.1;	/*	曲線の1/4周期の長さ l 変化速度	*/
+	const double WAVELENGTH_CHANGING_SPEED = 0.1;	/*	曲線の1/4周期の長さ l 変化速度	*/
 	if(joy_data.button_r1){
-		s_shaped_longitudnal_wave_.add_alpha(ALPHA_CHANGING_SPEED * sampling_time_);
+		s_shaped_longitudnal_wave_.add_wavelength(WAVELENGTH_CHANGING_SPEED * sampling_time_);
 	}else if(joy_data.button_r2){
-		s_shaped_longitudnal_wave_.add_alpha(-ALPHA_CHANGING_SPEED * sampling_time_);
+		s_shaped_longitudnal_wave_.add_wavelength(-WAVELENGTH_CHANGING_SPEED * sampling_time_);
 	}/*else{
-		s_shaped_longitudnal_wave_.add_alpha(0);
+		s_shaped_longitudnal_wave_.add_wavelength(0);
 	}*/
 
-	const double L_CHANGING_SPEED = 0.1;	/*	曲線の1/4周期の長さ l 変化速度	*/
+	const double RADIUS_CHANGING_SPEED = 0.1;	/*	曲線の1/4周期の長さ l 変化速度	*/
 	if(joy_data.button_l1){
-		s_shaped_longitudnal_wave_.add_l(L_CHANGING_SPEED * sampling_time_);
+		s_shaped_longitudnal_wave_.add_radius(RADIUS_CHANGING_SPEED * sampling_time_);
 	}else if(joy_data.button_l2){
-		s_shaped_longitudnal_wave_.add_l(-L_CHANGING_SPEED * sampling_time_);
+		s_shaped_longitudnal_wave_.add_radius(-RADIUS_CHANGING_SPEED * sampling_time_);
 	}/*else{
-		s_shaped_longitudnal_wave_.add_l(0);
-	} */
+		s_shaped_longitudnal_wave_.add_radius(0);
+	}*/
 
 	//const double V_CHANGING_SPEED = 0.01;		//体軸に沿った速度
+
 	if(joy_data.joy_stick_l_y_upwards){
 		double js_data = joy_data.joy_stick_l_y_upwards;
 		s_shaped_longitudnal_wave_.add_v(js_data);
@@ -118,7 +124,7 @@ void SnakeControl::OperateMoveShapedLongitudnalWave(joy_handler_hori::JoySelecte
   //const double V_CHANGING_SPEED = 0.01;		//体軸に沿った速度
 	if(joy_data.joy_stick_r_y_upwards){
 		double js_data = joy_data.joy_stick_r_y_upwards;
-		s_shaped_longitudnal_wave_.add_t(js_data);
+		s_shaped_longitudnal_wave_.add_phi(spec,js_data);
 	}
 
   /***  phiを入れるflag_ ON  にする,   A*sech(ω*t-Φ)  ***/
@@ -139,8 +145,8 @@ void SnakeControl::OperateMoveShapedLongitudnalWave(joy_handler_hori::JoySelecte
 	// 	s_shaped_longitudnal_wave_.add_bias(0);
 	// }
 
-	s_shaped_longitudnal_wave_.WindingShift(spec);
-	target_joint_angle = s_shaped_longitudnal_wave_.snake_model_param.angle;
+	//s_shaped_longitudnal_wave_.SShapedLongitudnalWaveByShift(spec);
+	target_joint_angle = s_shaped_longitudnal_wave_.CalculateTargetAngle(spec);
 	SnakeControlRequest::RequestJointSetPosition(target_joint_angle);
 }
 
@@ -383,4 +389,62 @@ void SnakeControl::OperateMoveTest(joy_handler_hori::JoySelectedData joy_data)
     ///SnakebotControlRequest::RequestJointSetPosition(target_joint_angle);
    // SnakebotControlRequest::RequestJointReadPositionAll();
   }
+}
+
+void SnakeControl::OperateMoveWarpGait(joy_handler_hori::JoySelectedData joy_data)
+{
+  std::vector<double> target_joint_angle(spec.num_joint(), 0.0);  // 値0.0で初期化;
+
+  if(joy_data.button_triangle){
+		warp_gait_.WarpModeChange(1);
+	}else if(joy_data.button_cross){
+    warp_gait_.WarpModeChange(0);
+  }
+
+  if(joy_data.button_circle){
+    warp_gait_.WarpShapeChange(1);
+  }else if(joy_data.button_square){
+    warp_gait_.WarpShapeChange(0);
+  }
+
+  if(warp_gait_.warp_mode_ == 0){
+    if(joy_data.joy_stick_l_y_upwards>0){
+      warp_gait_.WarpShapeChange(0);
+      warp_gait_.add_sl(joy_data.joy_stick_l_y_upwards/30);
+    }
+    if(joy_data.joy_stick_l_y_upwards<0){
+      warp_gait_.WarpShapeChange(1);
+  		warp_gait_.add_sl(joy_data.joy_stick_l_y_upwards/30);
+  	}
+    warp_gait_.WarpGaitInstallationByShift(spec);
+  }else if(warp_gait_.warp_mode_ == 1){
+    if(joy_data.joy_stick_l_y_upwards!=0){
+  		warp_gait_.add_sw(joy_data.joy_stick_l_y_upwards/30);
+  	}
+    warp_gait_.WarpGaitPromotion(spec);
+  }
+
+
+  /*** R1,R2を変化させる ***/
+  /*
+  const double RADIUS_CHANGING_SPEED = 0.01;	//変化させる速度
+	if(joy_data.button_l1){
+		warp_gait_.add_R1(RADIUS_CHANGING_SPEED * sampling_time_);
+	}else if(joy_data.button_l2){
+		warp_gait_.add_R1(-RADIUS_CHANGING_SPEED * sampling_time_);
+	}else{
+		warp_gait_.add_R1(0);
+	}
+  if(joy_data.button_r1){
+    warp_gait_.add_R2(RADIUS_CHANGING_SPEED * sampling_time_);
+  }else if(joy_data.button_r2){
+    warp_gait_.add_R2(-RADIUS_CHANGING_SPEED * sampling_time_);
+  }else{
+    warp_gait_.add_R2(0);
+  }
+  */
+
+
+	target_joint_angle = warp_gait_.snake_model_param.angle;
+	SnakeControlRequest::RequestJointSetPosition(target_joint_angle);
 }
