@@ -55,56 +55,65 @@ void timerCallback(const ros::TimerEvent& event)
 		ROS_INFO("Stop mode -->");
 	}*/
 
-    /* S Shaped Longitudnal Wave */
-	if (joystick.button_select and joystick.button_r1) {
-	// if (1) {
-		mode=1;    // s字縦波モーション
-		ROS_INFO("***    S Shaped Longitudnal Wave   -->  ***");
-	}
-    if(mode==1){
-
-    	SnakeControl::OperateMoveShapedLongitudnalWave(joystick);
-    }
-
-    /* sinus liftinhg */
-	if (joystick.button_select and joystick.button_r2) {
-		mode=2;    //sinus liftinhg
-		ROS_INFO("***  sinus liftinhg -->  ***");
-	}
-    if(mode==2){
-    	SnakeControl::OperateMoveSinusLifting(joystick);
-    }
-
-    /* pedal wave motion */
+	/* pedal wave motion */
 	if (joystick.button_select and joystick.button_l1) {
-		mode=3;    //pedal wave motion
+		mode=1;    //pedal wave motion
 		ROS_INFO("***  pedal wave motion -->  ***");
 	}
-    if(mode==3){
+    if(mode==1){
     	SnakeControl::OperateMovePedalWaveMotion(joystick);
     }
 
     /* sidewinding */
 	if (joystick.button_select and joystick.button_l2) {
-		mode=4;    // sidewinding
+		mode=2;    // sidewinding
 		ROS_INFO("***  sidewinding  -->  ***");
 	}
-    if(mode==4){
+    if(mode==2){
     	SnakeControl::OperateMoveSideWinding(joystick);
     }
 
-	/* warp gait */
+	/* Inchworm Gait */
+	if (joystick.button_select and joystick.button_r1) {
+		mode=3;    //Inchworm Gait
+		ROS_INFO("Inchworm Gait -->");
+	}
+    if(mode==3){	//Inchworm Gait
+    	//SnakeControl::OperateMoveWindingShift(joystick);
+    	SnakeControl::OperateMoveInchwormGait(joystick);
+    }
+
+    /* sinus liftinhg */
+	if (joystick.button_select and joystick.button_r2) {
+		mode=4;    //sinus liftinhg
+		ROS_INFO("***  sinus liftinhg -->  ***");
+	}
+    if(mode==4){
+    	SnakeControl::OperateMoveSinusLifting(joystick);
+    }
+
+	/* S-shape traveling wave motion */
+	if (joystick.button_select and joystick.button_triangle) {
+		mode=5;    // S-shape traveling wave motion
+		ROS_INFO("***    S-shape traveling wave motion   -->  ***");
+	}
+    if(mode==5){
+
+    	SnakeControl::OperateMoveShapedLongitudnalWave(joystick);
+    }
+
+	/* S-shaped twisting wave motion */
 	if (joystick.button_select and joystick.button_square) {
-			mode=5;    //warp gait
-			ROS_INFO("***  Warp Gait -->  ***");
+			mode=6;    //S-shaped twisting wave motion
+			ROS_INFO("***  S-shaped twisting wave motion -->  ***");
 	}
 
-	if(mode==5){
+	if(mode==6){
 		SnakeControl::OperateMoveWarpGait(joystick);
 	}
 
     /* Helical Wave Propagation Motion */
-	if (joystick.button_select and joystick.button_circle) {
+	if (joystick.button_select and joystick.button_cross) {
 		mode=7;    //helical wave propagate motion
 		ROS_INFO("***  Helical Wave Propagation Motion -->  ***");
 	}
@@ -112,17 +121,15 @@ void timerCallback(const ros::TimerEvent& event)
     	SnakeControl::OperateMoveHelicalWavePropagateMotion(joystick);
     }
 
-	/* Inchworm Gait */
-	if (joystick.button_select and joystick.button_triangle) {
-		mode=8;    //Inchworm Gait
-		ROS_INFO("Inchworm Gait -->");
+	/* xxx Gait */
+	if (joystick.button_select and joystick.button_circle) {
+		mode=8;    //xxx Gait
+		ROS_INFO("xxx Gait -->");
 	}
-    if(mode==8){	//Inchworm Gait
-    	//SnakeControl::OperateMoveWindingShift(joystick);
-    	SnakeControl::OperateMoveInchwormGait(joystick);
+    if(mode==8){	//xxx Gait
+    	//SnakeControl::OperateMovexxxShift(joystick);
+
     }
-
-
 
 
     //All motor TORQUE ON
