@@ -37,7 +37,7 @@ public:
 
 		pipe_r_ = 0.0891/2;
 		pipe_d_ = 0.1325;
-		offset_ = 0.01;
+		offset_ = -0.01;
 
 		pai_multiple_ = 1.0;
 		R1_multiple_ = pai_multiple_;
@@ -46,11 +46,11 @@ public:
 		pai_ = 3.14159;
 
 		//可動域の関係からRは0.076以上を指定
-		R1_ = pipe_r_ + link_wide_/2 + offset_; //曲率の大きいU字曲線の半径
-		R2_ = (pipe_r_ - link_wide_/2 + pipe_d_ - offset_)*R2_multiple_; //曲率の小さいU字曲線の半径*(2-pai_multiple_)
+		R1_ = pipe_r_ + link_wide_/2 + offset_ - 0.01; //曲率の大きいU字曲線の半径
+		R2_ = (pipe_r_ - link_wide_/2 + pipe_d_ - offset_)*R2_multiple_ -0.01; //曲率の小さいU字曲線の半径*(2-pai_multiple_)
 		R3_ = pipe_r_ + pipe_d_/2; //配管同士の中間地点を通っていける大きさ
 
-		warp_mode_ = 0;
+		warp_mode_ = 1;
 		warp_shape_ = 0;
 		warp_shift_ = 0;
 

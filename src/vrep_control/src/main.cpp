@@ -11,6 +11,9 @@ int main(int argc, char **argv) {
   RobotControlForVrep::Initialize();
   ROS_INFO("Initialized : snake_robot_master_vrep_node");
   while(ros::ok()) {
+    ROS_INFO("***  CoppeliaSim started successfully!!!  ***");
+    ROS_INFO("***      Congratulations to you!!!!       ***");
+    ROS_INFO("***             Good luck!!!              ***");
     ros::spin();
   }
 }

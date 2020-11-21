@@ -12,9 +12,9 @@
 #define NUM_JOINT 23
 #define NUM_IMU   1  // IMUは，Index番号がそのままリンクの番号
 #define MAX_JOINT_TORQUE 4.0 // [Nm] 最大トルク
-#define P_GAIN 1.0
-#define I_GAIN 0.0
-#define D_GAIN 0.0
+#define P_GAIN 3.5
+#define I_GAIN 0.3
+#define D_GAIN 0.3
 
 //#define USE_COP_SENSOR  // CoPセンサを使う場合は定義しておく
 

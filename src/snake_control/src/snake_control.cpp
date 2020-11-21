@@ -447,4 +447,6 @@ void SnakeControl::OperateMoveWarpGait(joy_handler_hori::JoySelectedData joy_dat
 
 	target_joint_angle = warp_gait_.snake_model_param.angle;
 	SnakeControlRequest::RequestJointSetPosition(target_joint_angle);
+	//SnakeControlRequest::RequestJointSetPIDGainAll(1,0,0);
+	// ROS_INFO("wojiaowangyongdong");
 }

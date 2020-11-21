@@ -33,8 +33,28 @@ void RobotControlForVrep::CallBackOfJointCommandForVrep(const snake_msgs::snake_
 {
 	uint8_t joint_index = joint_command.joint_index;
 	double target_position_deg = joint_command.target_position;
+  uint32_t p_gain = joint_command.p_gain;
+  uint32_t i_gain = joint_command.i_gain;
+  uint32_t d_gain = joint_command.d_gain;
 
+  // for (uint8_t i=0; i<23; i++) {
+  //  // SetJointMaxTorque(MAX_JOINT_TORQUE);
+  //   RequestJointSetPIDGain(0, true, p_gain, i_gain, d_gain);
+  //  // SetJointPresentAngleTarget();
+   //  Vrep::WaitForReachingLastCommand();
+  // }
+
+// RequestJointSetPIDGain(0, true, p_gain, i_gain, d_gain);
+  if (joint_command.set_pid_gain){ 
+  ROS_INFO("set_pid_gain = %d\n",joint_command.set_pid_gain);
+  ROS_INFO("p_gain = %d\n",p_gain);
+  ROS_INFO("i_gain = %d\n",i_gain);
+  ROS_INFO("d_gain = %d\n",d_gain);
+    RequestJointSetPIDGain(0, true, p_gain, i_gain, d_gain);
+    Vrep::WaitForReachingLastCommand();
+  }
 	if (joint_command.set_position){ RequestJointSetPosition(joint_index,false,target_position_deg);}
+ 
 }
 
 
