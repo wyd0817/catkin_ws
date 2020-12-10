@@ -26,7 +26,9 @@ find_package(catkin REQUIRED COMPONENTS
   SnakeCOPCommand.msg
   SnakeCOPData.msg
   gps.msg
-
+  SnakeJointCommand.msg
+  SnakeJointData.msg
+  SnakeJointData2.msg
 
  )
 

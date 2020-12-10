@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   snake_msgs
+  snake_msgs_abe
 )
 
 
@@ -35,10 +36,10 @@ add_definitions(-std=c++11)
  add_executable(${PROJECT_NAME}_node 
 			src/main.cpp
 			src/vrep.cpp
-			src/control_robot_for_vrep.cpp
-  			src/extApi.c
-  			src/extApiPlatform.c
-
+      src/control_robot_for_vrep.cpp
+      src/sim_snake_class.cpp
+  		src/extApi.c
+      src/extApiPlatform.c
 		)
 
  add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
